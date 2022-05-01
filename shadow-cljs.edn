@@ -1,0 +1,25 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src/dev"
+  "src/main"
+  "src/test"]
+
+ :dependencies 
+ [[nrepl "0.9.0"]
+  [cider/cider-nrepl "0.28.3"]
+  [refactor-nrepl "3.5.2"]
+  [juji/editscript "0.5.8"]]
+
+ :builds
+ {:app
+  {:target :browser
+   :output-dir "public/js"
+   :asset-path "/js"
+   :modules {:main {:init-fn kbdiff.core/init}}
+   :devtools {:http-root "public"
+              :http-port 3123}}
+  :script
+  {:target :node-script
+   :main kbdiff.core/init
+   :output-dir "public/js"
+   :output-to "out/out.js"}}}

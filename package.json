@@ -1,0 +1,11 @@
+{
+  "name": "kbdiff",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "2.18.0"
+  },
+  "dependencies": {
+    "@qmk-helper/kle-serial": "file:kle-serial"
+  }
+}
