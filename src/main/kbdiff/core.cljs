@@ -65,20 +65,20 @@
 
 (defn node-mkdir
   [path]
-  (let [[file dir] (re-find #"(.*)/[^/]*" path)]
-    (.mkdir fs dir {:recursive true}
-            (fn [err data]
-              (when err
-                (js/console.log err))))))
+  (.mkdir fs path {:recursive true}
+          (fn [err data]
+            #_(when err
+              (js/console.log err)))))
 
 (defn node-write-file
   [path data]
-  (node-mkdir path)
-  (.writeFile fs path data "utf8"
-              (fn [err data]
-                (if err
-                  (js/console.log err)
-                  (println (str "Created " path "!"))))))
+  (let [[file dir] (re-find #"(.*)/[^/]*" path)]
+    (when (some? dir) (node-mkdir dir))
+    (.writeFile fs path data "utf8"
+                (fn [err data]
+                  (if err
+                    (js/console.log err)
+                    (println (str "Created " path "!")))))))
 
 ;;; KLE utils
 (defn kle-deserialize
