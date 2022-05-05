@@ -146,16 +146,47 @@
 (defn mark-changed-keys
   [v1 v2 color text-color]
   (let [kle-diff (get-diff v1 v2)
-        changed-keys (->> kle-diff (map (comp first first)) distinct)]
+        changed-keys (->> kle-diff (map (comp first first)) distinct)
+        diff (js/goog.object.unsafeClone v2)]
     (doseq [k changed-keys]
-      (let [key-obj (-> v2 .-keys (get k))
+      (let [key-obj (-> diff .-keys (get k))
             labels (-> key-obj .-labels js->clj)
             text-color (->> labels
                             (map #(when (some? %) text-color))
                             clj->js)]
         (set! (-> key-obj .-color) color)
         (set! (-> key-obj .-textColor) text-color)))
-    v2))
+    diff))
+
+(def ^:dynamic *merge-axis* nil)
+(def ^:dynamic *merge-gap* nil)
+
+(defn get-max-axis-value
+  [kbd axis]
+  (->> kbd
+       (obj->clj-map)
+       :keys
+       (keep #(get % (keyword axis)))
+       (apply max)
+       #_(Math/ceil)))
+
+(defn merge-two-kbds
+  [k1 k2]
+  (let [k1-max-axis-value (get-max-axis-value k1 *merge-axis*)
+        [k1-keys k2-keys] (map #(js/goog.object.get % "keys") [k1 k2])]
+    ;; Move k2 keys
+    (doseq [k k2-keys
+            :let [curr-value (js/goog.object.get k *merge-axis*)]]
+      (js/goog.object.set k *merge-axis* (+ curr-value k1-max-axis-value *merge-gap*)))
+
+    (js/goog.object.set k1 "keys" (clj->js (concat k1-keys k2-keys)))
+    ;; return modified k1
+    k1)
+  )
+
+(defn add-layouts
+  [v1 v2 diff]
+  (reduce merge-two-kbds [v1 diff v2]))
 
 ;;; MAIN
 (defn ^:export -main [& args]
@@ -163,10 +194,16 @@
                 include-layouts axis gap exit-message ok?]}
         (validate-args args)]
     (if exit-message
-      (exit (if ok? 0 1) exit-message)
+       (exit (if ok? 0 1) exit-message)
 
-      (let [v1 (json->kbd version1)
-            v2 (json->kbd version2)]
-        (->> [v1 v2 color text-color] 
-             (apply mark-changed-keys)
-             (kbd->json dest))))))
+       (let [v1 (json->kbd version1)
+             v2 (json->kbd version2)]
+         (as-> [v1 v2 color text-color] $
+           (apply mark-changed-keys $)
+           (if (true? include-layouts)
+             (binding [*merge-axis* axis
+                       *merge-gap* gap]
+               (add-layouts v1 v2 $))
+             $)
+           (kbd->json dest $))))))
+
