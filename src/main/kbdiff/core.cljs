@@ -8,6 +8,9 @@
 (def default-diff-file-path "kle-diff.json")
 (def default-changed-key-color "#ffff00")
 (def default-changed-key-text-color "#000000")
+(def default-include-init-layouts false)
+(def default-stack-axis "x")
+(def default-gap 3)
 
 (def cli-options
   [["-1" "--version1 path" "Path to the json layout file of the version 1"]
@@ -18,6 +21,13 @@
     :default default-changed-key-color]
    ["-t" "--text-color value" "HEX value of the color for the text of changed key on diff"
     :default default-changed-key-text-color]
+   ["-i" "--include-layouts" "Whether to include initial layouts in the diff"
+    :default default-include-init-layouts]
+   ["-a" "--axis value" "On which axis to stack layouts"
+    :default default-stack-axis]
+   ["-g" "--gap value" "Gap between stacked layouts"
+    :default default-gap
+    :parse-fn #(js/parseInt %)]
    ["-h" "--help"]])
 
 (defn error-msg [errors]
@@ -29,7 +39,8 @@
   indicating the action the program should take and the options provided."
   [args]
   (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)
-        {:keys [help version1 version2 dest color text-color]}  options]
+        {:keys [help version1 version2 dest color
+                text-color include-layouts axis gap]}  options]
     (cond
       help
       {:exit-message summary :ok? true}
@@ -43,9 +54,14 @@
       {:exit-message (error-msg ["You didn't provide the first version of layout."])}
       (nil? version2)
       {:exit-message (error-msg ["You didn't provide the second version of layout."])}
+      (not (#{"x" "y"} axis))
+      {:exit-message (error-msg ["Axis value can be only x or y."])}
       :else 
       {:version1 version1
        :version2 version2
+       :include-layouts include-layouts
+       :axis axis
+       :gap gap
        :dest dest
        :color color
        :text-color text-color})))
@@ -143,7 +159,8 @@
 
 ;;; MAIN
 (defn ^:export -main [& args]
-  (let [{:keys [version1 version2 dest color text-color exit-message ok?]}
+  (let [{:keys [version1 version2 dest color text-color
+                include-layouts axis gap exit-message ok?]}
         (validate-args args)]
     (if exit-message
       (exit (if ok? 0 1) exit-message)
