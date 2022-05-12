@@ -12,15 +12,9 @@
   [org.clojure/tools.cli "1.0.206"]]
 
  :builds
- {:app
-  {:target :browser
-   :output-dir "public/js"
-   :asset-path "/js"
-   :modules {:main {:init-fn kbdiff.core/-main}}
-   :devtools {:http-root "public"
-              :http-port 3123}}
-  :script
+ {:kbdiff
   {:target :node-script
    :main kbdiff.core/-main
    :output-dir "public/js"
-   :output-to "out/out.js"}}}
+   :output-to "out/kbdiff.js"
+   :release {:compiler-options {:optimizations :simple}}}}}
