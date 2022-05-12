@@ -41,3 +41,6 @@ node out/kbdiff.js -1 resources/jiran_old.json -2 resources/jiran_new.json -d re
 ```
 Outputs *resources/jiran_diff.json* of two random versions of my Jiran layout (**with -i flag**) that looks like this:
 ![Diff img](resources/jiran_diff.jpg)
+
+No included version (**without -i flag**):
+![Diff img no include](resources/jiran_diff_no_include.jpg)
