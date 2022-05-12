@@ -17,4 +17,4 @@
    :main kbdiff.core/-main
    :output-dir "public/js"
    :output-to "out/kbdiff.js"
-   :release {:compiler-options {:optimizations :simple}}}}}
+   :release {:compiler-options {:optimizations :advanced}}}}}
