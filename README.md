@@ -4,18 +4,15 @@ Diff for keyboard-layout-editor.
 ## Installation
 
 1. Clone the repo
-2. ```bash
-git submodule update --init
-```
-2. ```bash
-npm install
-```
-3. ```bash
-npx shadow-cljs release kbdiff
-```
+2. ```bash git submodule update --init ```
+3. ```bash npm install ```
+4. ```bash npx shadow-cljs release kbdiff ```
 It will compile to kbdiff.js in out/ folder.
 
-Or you can use already compiled **kbdiff** binary included in the root.
+After this you can compile it to the executable binary using *caxa*:
+```bash
+npx caxa -i . -o kbdiff -- "{{caxa}}/node_modules/.bin/node" "{{caxa}}/out/kbdiff.js"
+```
 
 ## Usage
 ```bash
