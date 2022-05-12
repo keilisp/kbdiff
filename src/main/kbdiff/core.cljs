@@ -147,7 +147,7 @@
   [v1 v2 color text-color]
   (let [kle-diff (get-diff v1 v2)
         changed-keys (->> kle-diff (map (comp first first)) distinct)
-        diff (js/goog.object.unsafeClone v2)]
+        diff (->> v2 kle-stringify kle-parse)]
     (doseq [k changed-keys]
       (let [key-obj (-> diff .-keys (get k))
             labels (-> key-obj .-labels js->clj)
