@@ -31,7 +31,7 @@
    ["-h" "--help"]])
 
 (defn error-msg [errors]
-  (str "Something went wrong.:\n\n" (str/join \newline errors)))
+  (str "Something went wrong:\n\n" (str/join \newline errors)))
 
 (defn validate-args
   "Validate command line arguments. Either return a map indicating the program
