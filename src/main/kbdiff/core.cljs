@@ -82,9 +82,7 @@
 (defn node-mkdir
   [path]
   (.mkdir fs path {:recursive true}
-          (fn [err data]
-            #_(when err
-              (js/console.log err)))))
+          (fn [err data])))
 
 (defn node-write-file
   [path data]
@@ -143,6 +141,7 @@
        (map (comp first first))
        distinct))
 
+;; FIXME in `release` build mode text-color is always "#ffffff"
 (defn mark-changed-keys
   [v1 v2 color text-color]
   (let [kle-diff (get-diff v1 v2)
@@ -167,8 +166,7 @@
        (obj->clj-map)
        :keys
        (keep #(get % (keyword axis)))
-       (apply max)
-       #_(Math/ceil)))
+       (apply max)))
 
 (defn merge-two-kbds
   [k1 k2]
@@ -181,8 +179,7 @@
 
     (js/goog.object.set k1 "keys" (clj->js (concat k1-keys k2-keys)))
     ;; return modified k1
-    k1)
-  )
+    k1))
 
 (defn add-layouts
   [v1 v2 diff]
